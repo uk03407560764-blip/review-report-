@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KSA Review Auditor — Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#070c0f;color:#edf4f3;font-family:Arial,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;border-radius:12px;background:#fff;color:#111;display:grid;place-items:center;font-size:24px}
+h1{font-size:22px;margin:0}.sub,.muted{color:#839299}.sub{font-size:12px;margin-top:4px}
+.lang{background:#111c20;border:1px solid #34464d;color:#fff;border-radius:8px;padding:9px 13px}
+.card{background:#0c1519;border:1px solid #293a41;border-radius:12px;padding:19px;margin:14px 0}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.heading{text-transform:uppercase;letter-spacing:1.3px;font-weight:800;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.full{grid-column:1/-1}label{display:block;color:#9aa9ae;font-size:12px;margin-bottom:7px}
+input{width:100%;padding:14px;background:#071014;border:1px solid #35474e;border-radius:8px;color:#fff}
+button{padding:13px 18px;border-radius:8px;border:0;font-weight:800;cursor:pointer;background:#fff;color:#111}
+button.alt{background:#142126;color:#e8efef;border:1px solid #3a4c53}.actions{display:flex;gap:10px;margin-top:15px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#101b20;border:1px solid #293a41;border-radius:9px;padding:15px}.big{font-size:24px;font-weight:800;margin-top:6px}
+.review{border-top:1px solid #293a41;padding:15px 0}.stars{letter-spacing:2px}.tag{font-size:10px;margin-left:8px;border-radius:20px;padding:4px 8px;background:#172b2e;color:#71dfb2}
+.notice{font-size:12px;line-height:1.55;color:#89999f}.rtl{direction:rtl;text-align:right}.rtl .brand{flex-direction:row-reverse}.rtl .tag{margin-left:0;margin-right:8px}
+@media(max-width:700px){.grid,.stats{grid-template-columns:1fr}.full{grid-column:auto}.top{align-items:flex-start;gap:12px;flex-direction:column}}
+</style></head>
+<body><div class="wrap" id="app">
+<div class="top"><div class="brand"><div class="logo">📍</div><div><h1 data-en="REPORT REVIEW — KSA" data-ar="تدقيق التقييمات — السعودية">REPORT REVIEW — KSA</h1><div class="sub" data-en="Google Maps Review Auditor" data-ar="أداة تدقيق تقييمات خرائط Google">Google Maps Review Auditor</div></div></div><button class="lang" onclick="toggleLang()" id="lang">العربية</button></div>
+
+<div class="card"><div class="head"><div class="heading" data-en="Case Input" data-ar="بيانات الحالة">Case Input</div><span class="muted">🇸🇦 KSA</span></div>
+<div class="grid"><div class="full"><label data-en="Google Maps Business Link" data-ar="رابط نشاط Google Maps">Google Maps Business Link</label><input id="url" placeholder="Paste Google Maps business link"></div>
+<div><label data-en="Business Name" data-ar="اسم النشاط">Business Name</label><input id="business" placeholder="Business name"></div>
+<div><label data-en="Reviewer Display Name" data-ar="اسم المراجع">Reviewer Display Name</label><input id="reviewer" placeholder="Reviewer name"></div></div>
+<div class="actions"><button onclick="runDemo()" data-en="RUN AUDIT DEMO" data-ar="تشغيل التدقيق التجريبي">RUN AUDIT DEMO</button><button class="alt" onclick="clearDemo()" data-en="CLEAR" data-ar="مسح">CLEAR</button></div>
+<p class="notice" data-en="Demo mode: no Google API key is required. It uses sample data. Real Google reviews require a properly configured Google Places API backend." data-ar="الوضع التجريبي: لا يحتاج إلى مفتاح Google API ويستخدم بيانات نموذجية. التقييمات الحقيقية تتطلب إعداد Google Places API على الخادم.">Demo mode: no Google API key is required. It uses sample data.</p></div>
+
+<div id="result" style="display:none">
+<div class="card"><div class="heading" data-en="Business Overview" data-ar="ملخص النشاط">Business Overview</div><div class="stats" style="margin-top:14px">
+<div class="stat"><span class="muted" data-en="Business" data-ar="النشاط">Business</span><div class="big" id="biz">—</div></div>
+<div class="stat"><span class="muted" data-en="Rating" data-ar="التقييم">Rating</span><div class="big">4.6 ★</div></div>
+<div class="stat"><span class="muted" data-en="Reviews" data-ar="التقييمات">Reviews</span><div class="big">1,284</div></div>
+<div class="stat"><span class="muted" data-en="Market" data-ar="السوق">Market</span><div class="big">KSA</div></div>
+</div></div>
+
+<div class="card"><div class="head"><div class="heading" data-en="Review Audit Results" data-ar="نتائج تدقيق التقييمات">Review Audit Results</div><span class="muted">DEMO</span></div><div id="reviews"></div></div>
+<div class="card"><div class="heading" data-en="Official Reporting" data-ar="الإبلاغ الرسمي">Official Reporting</div><p class="notice" data-en="In the production version, eligible Google reviews can open Google's official reporting flow. The tool will not create or submit false reports." data-ar="في النسخة الإنتاجية يمكن فتح مسار الإبلاغ الرسمي من Google للتقييمات المؤهلة. الأداة لا تنشئ أو ترسل بلاغات كاذبة.">In the production version, eligible Google reviews can open Google's official reporting flow.</p></div>
+</div></div>
+<script>
+let ar=false;
+function toggleLang(){ar=!ar;document.documentElement.lang=ar?'ar':'en';document.getElementById('app').classList.toggle('rtl',ar);document.getElementById('lang').textContent=ar?'English':'العربية';document.querySelectorAll('[data-en]').forEach(e=>e.textContent=ar?e.dataset.ar:e.dataset.en)}
+function runDemo(){let b=document.getElementById('business').value.trim()||'KSA Demo Business';document.getElementById('biz').textContent=b;document.getElementById('result').style.display='block';
+let rs=[['5','Ahmed','Excellent service and very professional team.','Positive'],['2','Mohammed','Long waiting time and slow response.','Needs attention'],['4','Sara','Good experience overall and clean place.','Positive'],['3','Omar','Average experience; could be improved.','Neutral']];
+document.getElementById('reviews').innerHTML=rs.map(x=>'<div class="review"><span class="stars">'+('★'.repeat(+x[0]))+('☆'.repeat(5-+x[0]))+'</span><span class="tag">'+x[3]+'</span><div style="margin-top:8px"><b>'+x[1]+'</b></div><div class="muted" style="margin-top:5px">'+x[2]+'</div></div>').join('')}
+function clearDemo(){document.querySelectorAll('input').forEach(i=>i.value='');document.getElementById('result').style.display='none'}
+</script></body></html>
